@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	log.Printf("Run behat tests")
+
 	wNum := 4
 	behatArgsStart := 1
 
@@ -21,6 +23,8 @@ func main() {
 	behatArgs := os.Args[behatArgsStart:]
 
 	index, err := runner.GetIndexOfScenarios(behatArgs)
+
+	log.Printf("%d Scenario(s) found", len(index))
 
 	if err != nil {
 		panic(err)
@@ -51,7 +55,7 @@ func main() {
 		if res.Ok {
 			log.Printf("%s %s... OK\n", res.File, res.Scenario.Scenario)
 		} else {
-			log.Printf("%s %s... FAILED\n", res.File, res.Scenario)
+			log.Printf("%s %s... FAILED\n", res.File, res.Scenario.Scenario)
 
 			fCnt++
 
@@ -61,6 +65,11 @@ func main() {
 		}
 	}
 	close(rc)
-	log.Println("")
-	log.Printf("%d Scenario(s) of %d failed ", fCnt, len(index))
+
+	if fCnt > 0 {
+		log.Println("")
+		log.Printf("%d Scenario(s) of %d failed ", fCnt, len(index))
+
+		os.Exit(1)
+	}
 }
