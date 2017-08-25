@@ -7,7 +7,7 @@ import (
 )
 
 type Result struct {
-	Scenario      Scenario
+	Scenario
 	WorkerNumber  int
 	Ok            bool
 	Output        []byte
