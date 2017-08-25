@@ -7,11 +7,11 @@ import (
 )
 
 type Result struct {
-	Scenario 		Scenario
-	WorkerNumber  	int
-	Ok            	bool
-	Output        	[]byte
-	ExecutionTime 	time.Duration
+	Scenario      Scenario
+	WorkerNumber  int
+	Ok            bool
+	Output        []byte
+	ExecutionTime time.Duration
 }
 
 func Worker(wn int, sc chan Scenario, rc chan Result) {
@@ -29,13 +29,13 @@ func run(wn int, s Scenario) Result {
 
 	if err != nil {
 		return Result{
-			WorkerNumber: wn,
-			Scenario: s,
-			Ok:       false,
-			Output:   output,
-			ExecutionTime:executionTime,
+			WorkerNumber:  wn,
+			Scenario:      s,
+			Ok:            false,
+			Output:        output,
+			ExecutionTime: executionTime,
 		}
 	}
 
-	return Result{WorkerNumber: wn, Scenario: s, Ok: true, ExecutionTime:executionTime}
+	return Result{WorkerNumber: wn, Scenario: s, Ok: true, ExecutionTime: executionTime}
 }
