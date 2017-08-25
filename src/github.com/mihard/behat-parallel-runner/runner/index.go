@@ -13,9 +13,9 @@ type Scenario struct {
 	Scenario string
 }
 
-func GetIndexOfScenarios(beharArgs []string) (index []Scenario, err error) {
+func GetIndexOfScenarios(behatArgs []string) (index []Scenario, err error) {
 
-	indexerArgs := append([]string{"--dry-run", "--no-colors"}, beharArgs...)
+	indexerArgs := append([]string{"--dry-run", "--no-colors", "--no-interaction"}, behatArgs...)
 
 	cmd := exec.Command(BEHAT, indexerArgs...)
 	output, err := cmd.Output()
@@ -24,11 +24,11 @@ func GetIndexOfScenarios(beharArgs []string) (index []Scenario, err error) {
 		return
 	}
 
-	return readOutput(output)
+	return _readOutput(output)
 }
 
-func readOutput(output []byte) (index []Scenario, err error) {
-	rx := regexp.MustCompile("Scenario\\s*:\\s*(\\w.*\\w)\\s*#\\s*(.*):")
+func _readOutput(output []byte) (index []Scenario, err error) {
+	rx := regexp.MustCompile("Scenario(?:\\sOutline)?\\s*:\\s*(\\w.*\\w)\\s*#\\s*(.*):")
 
 	index = []Scenario{}
 
