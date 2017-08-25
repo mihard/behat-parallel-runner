@@ -1,0 +1,24 @@
+language: go
+
+go:
+  - 1.7.x
+
+jobs:
+  include:
+    - stage: build
+      install:
+        - export GOPATH=$TRAVIS_BUILD_DIR
+        - export PATH=$HOME/gopath/bin:$PATH
+        - go env
+      script:
+        - pwd
+        - ls -la .
+        - go build -i "-ldflags=-linkmode internal" -o ./build/bpr github.com/mihard/behat-parallel-runner
+      deploy:
+        provider: releases
+        skip_cleanup: true
+        api_key: $GITHUB_TOKEN
+        file: build/bpr
+        on:
+          tags: true
+          branch: master
