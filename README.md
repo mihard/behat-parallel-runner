@@ -28,3 +28,8 @@ The executable binary you can find on the releases page.
 $ cd <clonned project root>
 $ GOPATH=<clonned project root> go build -i "-ldflags=-linkmode internal" -o ./build/bpr github.com/mihard/behat-parallel-runner
 ```
+
+- Build on OSX machine for linux
+```
+$ env GOOS=linux GOARCH=amd64 GOPATH=<clonned project root> go build -i "-ldflags=-linkmode internal" -o ./build/bpr github.com/mihard/behat-parallel-runner
+```
