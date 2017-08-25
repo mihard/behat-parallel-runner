@@ -24,10 +24,10 @@ func GetIndexOfScenarios(behatArgs []string) (index []Scenario, err error) {
 		return
 	}
 
-	return _readOutput(output)
+	return readOutput(output)
 }
 
-func _readOutput(output []byte) (index []Scenario, err error) {
+func readOutput(output []byte) (index []Scenario, err error) {
 	rx := regexp.MustCompile("Scenario(?:\\sOutline)?\\s*:\\s*(\\w.*\\w)\\s*#\\s*(.*):")
 
 	index = []Scenario{}
