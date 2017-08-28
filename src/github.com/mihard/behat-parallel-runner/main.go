@@ -53,9 +53,9 @@ func main() {
 		res := <-rc
 
 		if res.Ok {
-			log.Printf("%s %s... OK\n", res.File, res.Scenario.Scenario)
+			log.Printf("%s [Done in %.2f sec] %s... OK \n", res.Scenario.File, res.ExecutionTime.Seconds(), res.Scenario.Scenario)
 		} else {
-			log.Printf("%s %s... FAILED\n", res.File, res.Scenario.Scenario)
+			log.Printf("%s [Done in %.2f sec] %s... FAILED\n", res.Scenario.File, res.ExecutionTime.Seconds(), res.Scenario.Scenario)
 
 			fCnt++
 
