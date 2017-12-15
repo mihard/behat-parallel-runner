@@ -4,25 +4,25 @@ import (
 	"github.com/mihard/behat-parallel-runner/runner"
 	"log"
 	"os"
-	"strconv"
+	"github.com/jessevdk/go-flags"
 )
 
 func main() {
 	log.Printf("Run behat tests")
+	type Options struct {
+    	BehatPath string `short:"p" long:"behat-path" description:"Path to behat executable" required:"true"`
+    	ProcessNumber int `short:"n" long:"process-number" description:"Process number" default:"4"`
+    }
 
-	wNum := 4
-	behatArgsStart := 1
+    var opts Options
 
-	if len(os.Args) > 1 {
-		if parsedNum, err := strconv.Atoi(os.Args[1]); err == nil {
-			wNum = parsedNum
-			behatArgsStart = 2
-		}
-	}
+    var parser = flags.NewParser(&opts, flags.IgnoreUnknown)
+    args, err := parser.Parse()
+    if err != nil {
+    	panic(err)
+    }
 
-	behatArgs := os.Args[behatArgsStart:]
-
-	index, err := runner.GetIndexOfScenarios(behatArgs)
+	index, err := runner.GetIndexOfScenarios(opts.BehatPath, args)
 
 	log.Printf("%d Scenario(s) found", len(index))
 
@@ -38,7 +38,7 @@ func main() {
 	sc := make(chan runner.Scenario, len(index))
 	rc := make(chan runner.Result, len(index))
 
-	for w := 1; w <= wNum; w++ {
+	for w := 1; w <= opts.ProcessNumber; w++ {
 		go runner.Worker(w, sc, rc)
 	}
 

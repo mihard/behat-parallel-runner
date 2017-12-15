@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os/exec"
 	"regexp"
+	"strings"
 )
 
 type Scenario struct {
@@ -13,11 +14,8 @@ type Scenario struct {
 	Scenario string
 }
 
-func GetIndexOfScenarios(behatArgs []string) (index []Scenario, err error) {
-
-	indexerArgs := append([]string{"--dry-run", "--no-colors", "--no-interaction"}, behatArgs...)
-
-	cmd := exec.Command(BEHAT, indexerArgs...)
+func GetIndexOfScenarios(behatPath string, behatArgs []string) (index []Scenario, err error) {
+	cmd := exec.Command(behatPath, strings.Join(behatArgs, " "))
 	output, err := cmd.Output()
 
 	if err != nil {
