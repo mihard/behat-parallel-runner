@@ -13,11 +13,11 @@ type Scenario struct {
 	Scenario string
 }
 
-func GetIndexOfScenarios(behatArgs []string) (index []Scenario, err error) {
+func GetIndexOfScenarios(behatCmd string, behatArgs []string) (index []Scenario, err error) {
 
 	indexerArgs := append([]string{"--dry-run", "--no-colors", "--no-interaction"}, behatArgs...)
 
-	cmd := exec.Command(BEHAT, indexerArgs...)
+	cmd := exec.Command(behatCmd, indexerArgs...)
 	output, err := cmd.Output()
 
 	if err != nil {

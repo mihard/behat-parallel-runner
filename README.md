@@ -13,9 +13,9 @@ It is a simple launcher of behat tests, which allow:
 - Run following command
 
 ```
-$ bpr 2 -s my_suite
+$ bpr -workers 2 -behat ./bin/behat -- -s my_suite
 ```
-where `bpr` is the name of executable file, 2 is a number of threads and everything else can be any regular behat arguments.
+where `bpr` is the name of executable file and after `--` can be any regular behat arguments.
 
 The executable binary you can find on the releases page.
 

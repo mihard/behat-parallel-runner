@@ -1,33 +1,31 @@
 package main
 
 import (
+	"flag"
 	"github.com/mihard/behat-parallel-runner/runner"
 	"log"
-	"os"
-	"strconv"
 )
+
+const BEHAT = "./vendor/bin/behat"
 
 func main() {
 	log.Printf("Run behat tests")
 
-	wNum := 4
-	behatArgsStart := 1
+	var wNum int
+	var behatCmd string
+	var verbose bool
 
-	if len(os.Args) > 1 {
-		if parsedNum, err := strconv.Atoi(os.Args[1]); err == nil {
-			wNum = parsedNum
-			behatArgsStart = 2
-		}
-	}
+	flag.IntVar(&wNum, "workers", 4, "amount of workers")
+	flag.StringVar(&behatCmd, "behat", BEHAT, "path to behat executable")
+	flag.BoolVar(&verbose, "verbose", false, "add the flag to see outputs of all scenarios")
 
-	behatArgs := os.Args[behatArgsStart:]
+	flag.Parse()
 
-	index, err := runner.GetIndexOfScenarios(behatArgs)
+	behatArgs := flag.Args()
 
-	log.Printf("%d Scenario(s) found", len(index))
-
+	index, err := runner.GetIndexOfScenarios(behatCmd, behatArgs)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Unable to fetch list of scenarios: %s", err.Error())
 	}
 
 	if len(index) < 1 {
@@ -35,11 +33,13 @@ func main() {
 		return
 	}
 
+	log.Printf("%d Scenario(s) found", len(index))
+
 	sc := make(chan runner.Scenario, len(index))
 	rc := make(chan runner.Result, len(index))
 
 	for w := 1; w <= wNum; w++ {
-		go runner.Worker(w, sc, rc)
+		go runner.Worker(behatCmd, w, sc, rc)
 	}
 
 	for _, s := range index {
@@ -54,22 +54,30 @@ func main() {
 
 		if res.Ok {
 			log.Printf("%s [Done in %.2f sec] %s... OK \n", res.Scenario.File, res.ExecutionTime.Seconds(), res.Scenario.Scenario)
+
+			if verbose {
+				dumpOutput(res.Output)
+			}
 		} else {
 			log.Printf("%s [Done in %.2f sec] %s... FAILED\n", res.Scenario.File, res.ExecutionTime.Seconds(), res.Scenario.Scenario)
 
 			fCnt++
 
-			for _, l := range runner.AsLineArray(res.Output) {
-				log.Printf("\t\t%s", l)
-			}
+			dumpOutput(res.Output)
 		}
 	}
 	close(rc)
 
 	if fCnt > 0 {
 		log.Println("")
-		log.Printf("%d Scenario(s) of %d failed ", fCnt, len(index))
-
-		os.Exit(1)
+		log.Fatalf("%d Scenario(s) of %d failed ", fCnt, len(index))
 	}
+}
+
+func dumpOutput(output []byte) {
+	for _, l := range runner.AsLineArray(output) {
+		log.Printf("\t\t%s", l)
+	}
+
+	log.Println("---")
 }

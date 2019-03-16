@@ -14,15 +14,15 @@ type Result struct {
 	ExecutionTime time.Duration
 }
 
-func Worker(wn int, sc chan Scenario, rc chan Result) {
+func Worker(behatCmd string, wn int, sc chan Scenario, rc chan Result) {
 	for s := range sc {
-		rc <- run(wn, s)
+		rc <- run(behatCmd, wn, s)
 	}
 }
 
-func run(wn int, s Scenario) Result {
+func run(behatCmd string, wn int, s Scenario) Result {
 	start := time.Now()
-	cmd := exec.Command(BEHAT, s.File, fmt.Sprintf("--name=%s", s.Scenario))
+	cmd := exec.Command(behatCmd, s.File, fmt.Sprintf("--name=%s", s.Scenario))
 	output, err := cmd.Output()
 	executionTime := time.Since(start)
 
